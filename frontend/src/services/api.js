@@ -1,15 +1,20 @@
+// frontend/src/services/api.js
 import axios from "axios";
 
+// ✅ Pick from environment (Vercel) or fallback to localhost
 const API = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api",
 });
 
-// Recipes
+// ---------------- Recipes ----------------
 export const fetchRecipes = () => API.get("/recipes");
-export const createRecipe = (data, token) =>
-  API.post("/recipes", data, { headers: { Authorization: `Bearer ${token}` } });
 
-// Image Upload
+export const createRecipe = (data, token) =>
+  API.post("/recipes", data, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+// ---------------- Image Upload ----------------
 export const uploadImage = (file) => {
   const formData = new FormData();
   formData.append("file", file);
@@ -18,6 +23,7 @@ export const uploadImage = (file) => {
   });
 };
 
-// Auth
+// ---------------- Auth ----------------
 export const registerUser = (data) => API.post("/users/register", data);
+
 export const loginUser = (data) => API.post("/users/login", data);
